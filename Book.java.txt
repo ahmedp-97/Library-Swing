@@ -1,0 +1,81 @@
+package Library;
+
+import java.util.Objects;
+
+public class Book {
+    private String name;
+    private String author;
+    private int numberOfCopies;
+    private int numberOfRentedCopies;
+
+    public Book(String name, String author, int numberOfCopies) {
+        this.name = name;
+        this.author = author;
+        this.numberOfCopies = numberOfCopies;
+        this.numberOfRentedCopies = 0;
+    }
+
+    public int getNumberOfCopies() {
+        return numberOfCopies;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public int getNumberOfRentedCopies() {
+        return numberOfRentedCopies;
+    }
+
+    public void setNumberOfCopies(int numberOfCopies) {
+        this.numberOfCopies = numberOfCopies;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void addNewCopies(int numberOfCopies){
+        this.numberOfCopies += numberOfCopies;
+    }
+
+    public void removeCopies(int numberOfCopies){
+        if(this.numberOfCopies < numberOfCopies)
+        {
+            this.numberOfCopies = 0;
+        }
+        else
+        {
+            this.numberOfCopies -= numberOfCopies;
+        }
+    }
+
+    public void rentBook(){
+        this.numberOfRentedCopies++;
+    }
+
+    public void returnBook(){
+        if(this.numberOfRentedCopies > 0) {
+            this.numberOfRentedCopies--;
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return Objects.equals(name, book.name) &&
+                Objects.equals(author, book.author);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, author);
+    }
+
+    @Override
+    public String toString() {
+        return name + " - " + author + " - " + numberOfCopies + " - " + numberOfRentedCopies + "\n";
+    }
+}

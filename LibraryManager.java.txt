@@ -1,0 +1,30 @@
+package Library;
+
+import java.awt.event.ActionListener;
+
+public class LibraryManager implements LoginListener {
+    private LoginFrame loginForm;
+    private LibraryFrame libraryFrame;
+
+    public void showLibrary() {
+        loginForm = new LoginFrame();
+        loginForm.showLoginFrame();
+        loginForm.setLoginListener(this);
+        libraryFrame = new LibraryFrame();
+        libraryFrame.showLibraryFrame();
+    }
+
+    @Override
+    public void onLoginSucces(boolean success) {
+        if(success) {
+            System.out.println("Login success");
+            loginForm.hideFrame();
+            libraryFrame = new LibraryFrame();
+            libraryFrame.showLibraryFrame();
+        }
+        else
+        {
+            System.out.println("Login failed");
+        }
+    }
+}

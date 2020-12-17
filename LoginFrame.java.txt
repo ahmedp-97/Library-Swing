@@ -1,0 +1,80 @@
+package Library;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class LoginFrame implements ActionListener {
+    private JFrame loginFrame;
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JButton loginButton;
+    private JLabel errorMessage;
+    private LoginListener loginListener;
+
+    public void showLoginFrame() {
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        loginFrame = new JFrame();
+
+        JLabel usernameLabel = new JLabel("Username");
+        usernameLabel.setBounds(150, 120, 200, 30);
+        loginFrame.add(usernameLabel);
+
+        usernameField = new JTextField();
+        usernameField.setBounds(150, 150, 200, 30);
+        loginFrame.add(usernameField);
+
+        JLabel passwordLabel = new JLabel("Password");
+        passwordLabel.setBounds(150, 180, 200, 30);
+        loginFrame.add(passwordLabel);
+
+        passwordField = new JPasswordField();
+        passwordField.setBounds(150, 210, 200, 30);
+        loginFrame.add(passwordField);
+
+        loginButton = new JButton("Login");
+        loginButton.setBounds(150, 250, 200, 30);
+        loginButton.addActionListener(this);
+        loginFrame.add(loginButton);
+
+        errorMessage = new JLabel();
+        errorMessage.setBounds(150, 300, 200, 30);
+        errorMessage.setForeground(Color.red);
+        Font font = new Font("Verdana", Font.BOLD, 10);
+        errorMessage.setFont(font);
+        loginFrame.add(errorMessage);
+
+        loginFrame.setBounds(dimension.width/2 - 250, dimension.height/2 - 250, 500, 500);
+        loginFrame.setLayout(null);
+        loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        loginFrame.setVisible(true);
+    }
+
+    public void hideFrame() {
+        loginFrame.setVisible(false);
+    }
+
+    public void setLoginListener(LoginListener listener){
+        loginListener = listener;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource().equals(loginButton)) {
+            String passwordValue = new String(passwordField.getPassword());
+            if(usernameField.getText().equals("admin") && passwordValue.equals("admin2")) {
+                if(loginListener != null) {
+                    loginListener.onLoginSucces(true);
+                }
+
+            }
+            else {
+                if(loginListener != null) {
+                    loginListener.onLoginSucces(false);
+                }
+                errorMessage.setText("Wrong username or password");
+            }
+        }
+    }
+}

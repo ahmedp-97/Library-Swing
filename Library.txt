@@ -1,0 +1,59 @@
+package Library;
+
+
+import java.util.ArrayList;
+
+public class Library {
+    private ArrayList<Book> books;
+
+    public Library(){
+        books = new ArrayList<Book>();
+    }
+
+    public void addBook(Book book){
+        boolean founded = false;
+        for(Book b : books){
+            if(b.equals(book)){
+                b.addNewCopies(book.getNumberOfCopies());
+                founded = true;
+            }
+        }
+        if(!founded){
+            books.add(book);
+        }
+    }
+
+    public void deleteBook(Book book){
+        books.remove(book);
+    }
+
+    public ArrayList<Book> getBooks() {
+        return books;
+    }
+
+    public String[][] getBooksAsArray(){
+        String[][] listOfBooks = new String[books.size()][4];
+        for(int i = 0; i < books.size(); i++) {
+            listOfBooks[i][0] = books.get(i).getName();
+            listOfBooks[i][1] = books.get(i).getAuthor();
+            listOfBooks[i][2] = Integer.toString(books.get(i).getNumberOfCopies());
+            listOfBooks[i][3] = Integer.toString(books.get(i).getNumberOfRentedCopies());
+        }
+        return listOfBooks;
+    }
+
+    public void addDummyData(){
+        books.add(new Book("Tvrdjava", "Mesa Selimovic", 5));
+        books.add(new Book("Harry Potter", "JK Rowling", 2));
+        books.add(new Book("Na Drini cuprija", "Ivo Andric", 44));
+        books.add(new Book("Rubajie", "Omer Hajjam", 51));
+        books.add(new Book("Game of Thrones", "George RR Martin", 12));
+        books.add(new Book("IT", "Steven King", 3));
+        books.add(new Book("Islamska deklaracija", "Alija Izetbegovic", 53));
+        books.add(new Book("Grof Monte Kristo", "Aleksandar Dumas", 1));
+        books.add(new Book("Vlak u snijegu", "Mato Lovrak", 23));
+        books.add(new Book("Ruza", "Nura Bazdulj Hubijar", 11));
+        books.add(new Book("Ilijada i Odiseja", "Homer", 4));
+        books.add(new Book("Lord of Rings", "JRR Tolkien", 41));
+    }
+}

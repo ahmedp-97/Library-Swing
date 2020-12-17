@@ -1,0 +1,203 @@
+package Library;
+
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Vector;
+
+public class LibraryFrame {
+    private JFrame mainFrame;
+    private Library library;
+    private JTable listOfBooksTable;
+    private DefaultTableModel tableModel;
+    private int selectedRow;
+    private JMenu mainMenu;
+    private JMenuItem addBookItem;
+    private Dimension dimension;
+
+    public LibraryFrame(){
+        this.library = new Library();
+        this.library.addDummyData();
+    }
+    public void showLibraryFrame() {
+        dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        mainFrame = new JFrame();
+
+        JMenuBar mb=new JMenuBar();
+        mainMenu=new JMenu("Add");
+        addBookItem=new JMenuItem("Add book");
+        addBookItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JDialog dialog = new JDialog();
+
+                JLabel titleLable = new JLabel("Title");
+                titleLable.setBounds(100, 20, 200, 20);
+                dialog.add(titleLable);
+
+                JTextField titleInputField = new JTextField("Unesite naslov");
+                titleInputField.setBounds(100, 40, 200, 30);
+                dialog.add(titleInputField);
+
+
+                JLabel authorLabel = new JLabel("Author");
+                authorLabel.setBounds(100, 80, 200, 20);
+                dialog.add(authorLabel);
+
+                JTextField authorInputField = new JTextField();
+                authorInputField.setBounds(100, 100, 200, 30);
+                dialog.add(authorInputField);
+
+                JLabel nocLabel = new JLabel("Number of copies");
+                nocLabel.setBounds(100, 140, 200, 20);
+                dialog.add(nocLabel);
+
+                JTextField numberOfCopiesInputField = new JTextField();
+                numberOfCopiesInputField.setBounds(100, 160, 200, 30);
+                dialog.add(numberOfCopiesInputField);
+
+                JButton addBookButton = new JButton("Add book");
+                addBookButton.setBounds(100, 200, 200, 30);
+                addBookButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Book newBook = new Book(titleInputField.getText(), authorInputField.getText(), Integer.parseInt(numberOfCopiesInputField.getText()));
+                        Book foundedBook = null;
+                        for(Book book : library.getBooks()){
+                            if(book.equals(newBook)){
+                                foundedBook = book;
+                            }
+                        }
+                        if(foundedBook == null){
+                            Vector<String> bookData = new Vector<>();
+                            bookData.add(newBook.getName());
+                            bookData.add(newBook.getAuthor());
+                            bookData.add(Integer.toString(newBook.getNumberOfCopies()));
+                            bookData.add(Integer.toString(newBook.getNumberOfRentedCopies()));
+                            tableModel.addRow(bookData);
+                        } else {
+                            for(int i = 0; i < tableModel.getRowCount(); i++){
+                                if(foundedBook.getName().equals(tableModel.getValueAt(i, 0)) &&
+                                        foundedBook.getAuthor().equals((tableModel.getValueAt(i, 1)))){
+                                    int newCopiesNumber = foundedBook.getNumberOfCopies() + newBook.getNumberOfCopies();
+                                    String newNumberOfCopies = Integer.toString(newCopiesNumber);
+                                    foundedBook.setNumberOfCopies(newCopiesNumber);
+                                    tableModel.setValueAt(newNumberOfCopies, i, 2);
+                                }
+                            }
+                        }
+
+                        dialog.setVisible(false);
+                    }
+                });
+                dialog.add(addBookButton);
+
+                dialog.setLayout(null);
+                dialog.setBounds(dimension.width/2 - 200, dimension.height/2 - 200, 400, 400);
+                dialog.setVisible(true);
+
+            }
+        });
+        mainMenu.add(addBookItem);
+        mb.add(mainMenu);
+        mainFrame.setJMenuBar(mb);
+
+        JLabel infoText = new JLabel("Welcome to library");
+        infoText.setBounds(50, 50, 500, 30);
+        infoText.setForeground(Color.blue);
+        Font font = new Font("Verdana", Font.BOLD, 18);
+        infoText.setFont(font);
+        mainFrame.add(infoText);
+        mainFrame.setBounds(dimension.width/2 - 400, dimension.height/2 - 400, 800, 800);
+
+        tableModel = new DefaultTableModel();
+        tableModel.addColumn("Title");
+        tableModel.addColumn("Author");
+        tableModel.addColumn("Number of copies");
+        tableModel.addColumn("Number of rented copies");
+        for(Book book : library.getBooks()){
+            Vector<String> columns = new Vector<String>();
+            columns.add(book.getName());
+            columns.add(book.getAuthor());
+            columns.add(Integer.toString(book.getNumberOfCopies()));
+            columns.add(Integer.toString(book.getNumberOfRentedCopies()));
+            tableModel.addRow(columns);
+        }
+
+        listOfBooksTable = new JTable(tableModel);
+
+        JScrollPane listOfBooksScrollPane=new JScrollPane(listOfBooksTable);
+        listOfBooksScrollPane.setBounds(10, 100, 780, 250);
+        mainFrame.add(listOfBooksScrollPane);
+
+        JButton removeBookButton = new JButton("Remove book");
+        removeBookButton.setBounds(600, 380, 120, 20);
+        removeBookButton.setVisible(false);
+        removeBookButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tableModel.removeRow(selectedRow);
+            }
+        });
+        mainFrame.add(removeBookButton);
+
+        JButton printBooks = new JButton("Print books");
+        printBooks.setBounds(150, 380, 120, 20);
+        printBooks.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(library.getBooks());
+            }
+        });
+        mainFrame.add(printBooks);
+
+        JButton rentBookButton = new JButton("Rent book");
+        rentBookButton.setBounds(450, 380, 120, 20);
+        rentBookButton.setVisible(false);
+        rentBookButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String bookName = (String)tableModel.getValueAt(selectedRow, 0);
+                String bookAuthor = (String)tableModel.getValueAt(selectedRow, 1);
+                for(Book book : library.getBooks()){
+                    if(book.getName().equals(bookName) && book.getAuthor().equals(bookAuthor)){
+                        if(book.getNumberOfCopies() > book.getNumberOfRentedCopies()){
+                            book.rentBook();
+                            String numberOfRentedCopies = Integer.toString(book.getNumberOfRentedCopies());
+                            tableModel.setValueAt(numberOfRentedCopies, selectedRow, 3);
+                        }
+                    }
+                }
+
+            }
+        });
+        mainFrame.add(rentBookButton);
+
+        ListSelectionModel select= listOfBooksTable.getSelectionModel();
+        select.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        select.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                if(!e.getValueIsAdjusting()){
+                    selectedRow = listOfBooksTable.getSelectedRow();
+                    if(selectedRow == -1){
+                        removeBookButton.setVisible(false);
+                        rentBookButton.setVisible(false);
+                    }else {
+                        removeBookButton.setVisible(true);
+                        rentBookButton.setVisible(true);
+                    }
+                }
+            }
+        });
+
+        mainFrame.setLayout(null);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setVisible(true);
+    }
+}
